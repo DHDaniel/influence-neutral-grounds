@@ -248,7 +248,8 @@ mb_away <- MatchBalance(Tr ~ sport + competition_dummy_factor + elo_diff_adjuste
                         I(competition_dummy_factor*elo_diff_adjusted_log) + I(sport*competition_dummy_factor)
                         , data = mb_data_away, match.out = mout_away, nboots = 1000)
 
-summary(mout_away)
+summary(mout_away) 
+#go Pedro e Flamengo --> hoje tem gol do Gabigol
 
 
 
