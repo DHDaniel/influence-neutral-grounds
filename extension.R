@@ -40,13 +40,7 @@ mb_home <- MatchBalance(Tr ~ sport + competition_dummy_factor + elo_diff_adjuste
 
 ## Adding I(competition_dummy_factor*elo_diff_adjusted_log)
 
-df_not_away <- data_matching_not_away
-df_not_away$match_place_num <- rep(0, nrow(data_matching_not_away))
-df_not_away[which(data_matching_not_away$match_place_num == 3),]$match_place_num <- 1
-df_not_away$sport <- as.numeric(df_not_away$sport)
-df_not_away$competition_dummy_factor <- as.numeric(df_not_away$competition_dummy_factor)
 
-Tr_away <- df_not_away$match_place_num
 attach(df_not_away)
 X_away <- cbind(sport, competition_dummy_factor, elo_diff_adjusted_log, I(competition_dummy_factor*elo_diff_adjusted_log))
 detach(df_not_away)
@@ -84,13 +78,7 @@ summary(mout_away)
 
 ## Adding I(sport*elo_diff_adjusted_log) and I(competition_dummy_factor*elo_diff_adjusted_log)
 
-df_not_away <- data_matching_not_away
-df_not_away$match_place_num <- rep(0, nrow(data_matching_not_away))
-df_not_away[which(data_matching_not_away$match_place_num == 3),]$match_place_num <- 1
-df_not_away$sport <- as.numeric(df_not_away$sport)
-df_not_away$competition_dummy_factor <- as.numeric(df_not_away$competition_dummy_factor)
 
-Tr_away <- df_not_away$match_place_num
 attach(df_not_away)
 X_away <- cbind(sport, competition_dummy_factor, elo_diff_adjusted_log, I(sport*elo_diff_adjusted_log), I(competition_dummy_factor*elo_diff_adjusted_log))
 detach(df_not_away)
@@ -106,13 +94,7 @@ summary(mout_away)
 
 # Adding I(elo_diff_adjusted_log^2) and I(competition_dummy_factor*elo_diff_adjusted_log)
 
-df_not_away <- data_matching_not_away
-df_not_away$match_place_num <- rep(0, nrow(data_matching_not_away))
-df_not_away[which(data_matching_not_away$match_place_num == 3),]$match_place_num <- 1
-df_not_away$sport <- as.numeric(df_not_away$sport)
-df_not_away$competition_dummy_factor <- as.numeric(df_not_away$competition_dummy_factor)
 
-Tr_away <- df_not_away$match_place_num
 attach(df_not_away)
 X_away <- cbind(sport, competition_dummy_factor, elo_diff_adjusted_log, I(elo_diff_adjusted_log^2), I(competition_dummy_factor*elo_diff_adjusted_log))
 detach(df_not_away)
@@ -129,13 +111,6 @@ summary(mout_away)
 
 # Adding I(elo_diff_adjusted_log^2) and I(competition_dummy_factor*elo_diff_adjusted_log) and I(sport*competition_dummy_factor)
 
-df_not_away <- data_matching_not_away
-df_not_away$match_place_num <- rep(0, nrow(data_matching_not_away))
-df_not_away[which(data_matching_not_away$match_place_num == 3),]$match_place_num <- 1
-df_not_away$sport <- as.numeric(df_not_away$sport)
-df_not_away$competition_dummy_factor <- as.numeric(df_not_away$competition_dummy_factor)
-
-Tr_away <- df_not_away$match_place_num
 attach(df_not_away)
 X_away <- cbind(sport, competition_dummy_factor, elo_diff_adjusted_log, I(elo_diff_adjusted_log^2), 
                 I(competition_dummy_factor*elo_diff_adjusted_log), I(sport*competition_dummy_factor))
