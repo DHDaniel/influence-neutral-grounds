@@ -1,5 +1,6 @@
 
 library(Matching)
+library(rbounds)
 
 load("data_matching_not_away.Rda")
 load("data_matching_not_home.Rda")
@@ -86,3 +87,17 @@ model_home <- glm(match_place_num ~ result_dummy_num, data = df_results_home, fa
 summary(model_home)
 confint(model_home)
 
+
+##########################
+# Sensitivity analysis
+##########################
+
+# Rosenbaum sensitivity analysis for away
+mout_away_est = Match(Y = df_not_away$result_dummy_num, Tr=Tr_away, X=X_away, Weight.matrix = genout_away, caliper=0.2, ties = FALSE)
+sens_away = psens(mout_away_est, Gamma = 3, GammaInc = 0.1)
+summary(sens_away)
+
+# Rosenbaum sensitivity analysis for home
+mout_home_est = Match(Y = df_not_home$result_dummy_num, Tr=Tr_home, X=X_home, Weight.matrix = genout_home, ties = FALSE, caliper = 0.2)
+sens_home = psens(mout_home_est, Gamma = 3, GammaInc = 0.1)
+summary(sens_home)
