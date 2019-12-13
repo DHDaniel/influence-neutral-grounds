@@ -40,8 +40,8 @@ mb_away <- MatchBalance(Tr ~ sport + competition_dummy_factor + elo_diff_adjuste
                         , data = mb_data_away, match.out = mout_away, nboots = 1000)
 # evaluate treatment effect using a logistic regression, just like in the original
 # paper.
-df_results <- df_not_away[c(mout_away$index.control, mout_away$index.treated), ]
-model_away <- glm(match_place_num ~ result_dummy_num, data = df_results, family = "binomial")
+df_results_away <- df_not_away[c(mout_away$index.control, mout_away$index.treated), ]
+model_away <- glm(match_place_num ~ result_dummy_num, data = df_results_away, family = "binomial")
 # results
 summary(model_away)
 confint(model_away)
@@ -57,10 +57,32 @@ df_not_home$competition_dummy_factor <- as.numeric(df_not_home$competition_dummy
 Tr_home <- df_not_home$match_place_num
 X_home <- df_not_home[, -c(1, 3)]
 
-genout_home <- GenMatch(Tr=Tr_home, X=X_home, estimand="ATT", pop.size = 30, max.generations = 25)
-mout_home <- Match(Tr=Tr_home, X=X_home, Weight.matrix = genout_home)
+# make balance matrix for genmatch using interaction terms
+attach(df_not_home)
+BalanceMat_home <- cbind(sport, competition_dummy_factor, elo_diff_adjusted_log, I(elo_diff_adjusted_log^2), 
+                         I(competition_dummy_factor*elo_diff_adjusted_log), I(sport*competition_dummy_factor))
+detach(df_not_home)
+
+genout_home <- GenMatch(Tr=Tr_home, 
+                        X=X_home, 
+                        BalanceMatrix = BalanceMat_home,
+                        estimand="ATT", 
+                        caliper=0.2,
+                        pop.size = 100, 
+                        max.generations = 25, 
+                        ties = FALSE)
+mout_home <- Match(Tr=Tr_home, X=X_home, Weight.matrix = genout_home, ties = FALSE, caliper = 0.2)
 
 mb_data_home <- data.frame(Tr=Tr_home, X_home)
 
-mb_home <- MatchBalance(Tr ~ sport + competition_dummy_factor + elo_diff_adjusted_log, data = mb_data_home, match.out = mout_home, nboots = 1000)
+mb_home <- MatchBalance(Tr ~ sport + competition_dummy_factor + elo_diff_adjusted_log + I(elo_diff_adjusted_log^2) + 
+                            I(competition_dummy_factor*elo_diff_adjusted_log) + I(sport*competition_dummy_factor),
+                        data = mb_data_home, match.out = mout_home, nboots = 1000)
+# evaluate treatment effect using a logistic regression, just like in the original
+# paper.
+df_results_home <- df_not_home[c(mout_home$index.control, mout_home$index.treated), ]
+model_home <- glm(match_place_num ~ result_dummy_num, data = df_results_home, family = "binomial")
+# results
+summary(model_home)
+confint(model_home)
 
