@@ -333,3 +333,4 @@ ggplot(output_cem_plot, aes(y = SATT, x = labels_axis)) +
          x = NULL) +
     theme(axis.text = element_text(colour = "black"),
           strip.text = element_text(size = 11, face = "bold"))
+
