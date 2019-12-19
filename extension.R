@@ -1,10 +1,17 @@
 
 library(Matching)
 library(ggplot2)
+library(ggthemes)
 library(rbounds)
 
 load("data_matching_not_away.Rda")
 load("data_matching_not_home.Rda")
+
+# for replication purposes
+set.seed(123)
+
+# better ggplot theme
+theme_set(ggthemes::theme_few())
 
 # analysis for home
 
@@ -111,14 +118,14 @@ genmatch_data_away <- data.frame(
     "ci_high"=c(confint(model_away)[2, 2],  confint(model_away_cov)[2, 2]),
     "labels_axis"=c("GenMatch (97.8%)", "GenMatch, with covariates (97.8%)")
 )
-plot_data <- rbind(cem_data_plot, genmatch_data_not_home, genmatch_data_not_away)
+plot_data <- rbind(cem_data_plot, genmatch_data_home, genmatch_data_away)
 
 ggplot(plot_data, aes(y = SATT, x = labels_axis)) +
     geom_hline(yintercept = 0, linetype = "dotted", colour = "red") +
     geom_pointrange(aes(ymin = ci_low, ymax = ci_high)) +
     coord_flip() + 
     facet_wrap(~model_type, nrow = 2, scales = "free_y") +
-    labs(y = "Sample average treatment effect on the treated (SATT) and 95% CI",
+    labs(y = "Sample average treatment effect on the treated (SATT) \n and 95% CI of log-odds",
          x = NULL) +
     theme(axis.text = element_text(colour = "black"),
           strip.text = element_text(size = 11, face = "bold"))
