@@ -136,6 +136,37 @@ boot_home_advantage <- data_long_dummy %>%
 boot_home_advantage <- boot_home_advantage %>% 
     bind_cols(cases_home_advantage)
 
+## Run regression models for paper
+
+data_long_one_team_dummy <- data_long_one_team %>% 
+    mutate(team_sport = paste(team, sport, sep = "_")) %>% 
+    filter(result %in% c("winner", "loser")) %>% 
+    mutate(team_sport = as.factor(team_sport))
+
+
+## Model 1 (Table 1) ----
+glmer_total <- glmer(result_dummy ~  competition_dummy_factor * match_place *
+                         sport + 
+                         elo_diff_adjusted_log +year + (1 | team_sport),
+                     family = binomial(logit),  
+                     data = data_long_one_team_dummy)
+
+## Model 2 (Table 1) ----
+glmer_football <- glmer(result_dummy ~ 
+                            elo_diff_adjusted_log + 
+                            competition_dummy_factor * match_place +  
+                            year + (1 | team),
+                        family = binomial(logit),  
+                        data = filter(data_long_one_team_dummy,
+                                      sport == "Gaelic Football"))
+
+## Model 3 (Table 1) ----
+glmer_hurling <- glmer(result_dummy ~ elo_diff_adjusted_log + 
+                           competition_dummy_factor * match_place + 
+                           year + (1 | team),
+                       family = binomial(logit),  
+                       data = filter(data_long_one_team_dummy, 
+                                     sport == "Hurling"))
 
 ## Figure 2 ----
 
@@ -329,7 +360,7 @@ ggplot(output_cem_plot, aes(y = SATT, x = labels_axis)) +
     geom_pointrange(aes(ymin = ci_low, ymax = ci_high)) +
     coord_flip() + 
     facet_wrap(~model_type, nrow = 2, scales = "free_y") +
-    labs(y = "Sample average treatment effect on the treated (SATT) and 95% CI",
+    labs(y = "Sample average treatment effect on the treated (SATT) \n and 95% CI of log-odds",
          x = NULL) +
     theme(axis.text = element_text(colour = "black"),
           strip.text = element_text(size = 11, face = "bold"))
